@@ -1,13 +1,12 @@
 package gui;
 
+import game.DiskColor;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -23,20 +22,21 @@ public class GameController {
 
     private Player player;
 
-    private boolean squareIsSelected = false;;
+    private boolean squareIsSelected = false;
 
-
-    @FXML
-    private Label redLabel;
+    private DiskColor toBePlacedColor;
 
     @FXML
-    private Label blueLabel;
+    private Label redNumLabel;
 
     @FXML
-    private Label greenLabel;
+    private Label blueNumLabel;
 
     @FXML
-    private Label yellowLabel;
+    private Label greenNumLabel;
+
+    @FXML
+    private Label yellowNumLabel;
 
 
     @FXML
@@ -59,6 +59,9 @@ public class GameController {
 
     @FXML
     private StackPane pressedSquare;
+
+    private BooleanProperty gameOver = new SimpleBooleanProperty();
+    private BooleanProperty gameDraw = new SimpleBooleanProperty();
 
     public void setUsername(String username, String username2){
         this.username = username;
@@ -83,7 +86,35 @@ public class GameController {
         gameState = new FourColorsGame();
         player = Player.ONE;
         populateGrid();
+        gameState.setEmptySquare();
         registerKeyEventHandler();
+        setNumLabels();
+
+        gameOver.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                Logger.info("Game Over");
+            }
+        });
+        gameDraw.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                Logger.info("Game resulted in draw, no changes in statistics");
+            }
+        });
+
+        for (int a = 0; a < 4; a++) {
+            for (int b = 0; b < 4; b++) {
+                System.out.println(gameState.board[a][b] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    @FXML
+    private void setNumLabels() {
+        redNumLabel.setText(Integer.toString(gameState.red_num));
+        blueNumLabel.setText(Integer.toString(gameState.blue_num));
+        greenNumLabel.setText(Integer.toString(gameState.green_num));
+        yellowNumLabel.setText(Integer.toString(gameState.yellow_num));
     }
 
     private void populateGrid() {
@@ -91,7 +122,6 @@ public class GameController {
             for (int j = 0; j < 4; j++) {
                 var square = createSquare();
                 board.add(square, j, i);
-                gameState.setEmptySquare(i,j);
             }
         }
     }
@@ -115,49 +145,71 @@ public class GameController {
         var row = GridPane.getRowIndex(pressedSquare);
         var col = GridPane.getColumnIndex(pressedSquare);
         var disk = (Circle) pressedSquare.getChildren().get(0);
-        if (!gameState.isGameDraw() && !gameState.isGameOver()) {
-            if (gameState.isSquareEmpty(row, col)) {
+        if (gameState.isSquareEmpty(row,col)) {
                 squareIsSelected = true;
 
                 if (player == Player.ONE) {
                     if (disk.getFill().equals(Color.TRANSPARENT)) {
                         disk.setFill(Color.RED);
+                        toBePlacedColor = DiskColor.RED;
                     } else if (disk.getFill().equals(Color.RED)) {
-                        disk.setFill(Color.AQUA);
+                        disk.setFill(Color.DODGERBLUE);
+                        toBePlacedColor = DiskColor.BLUE;
                     } else {
                         disk.setFill(Color.RED);
+                        toBePlacedColor = DiskColor.RED;
                     }
                 }
 
                 if(player == Player.TWO){
                     if(disk.getFill().equals(Color.TRANSPARENT)) {
                         disk.setFill(Color.GREEN);
+                        toBePlacedColor = DiskColor.GREEN;
                     } else if (disk.getFill().equals(Color.GREEN)) {
                         disk.setFill(Color.rgb(238,203,26));
+                        toBePlacedColor = DiskColor.YELLOW;
                     } else {
                         disk.setFill(Color.GREEN);
+                        toBePlacedColor = DiskColor.GREEN;
                     }
                 }
 
                 Logger.info("Clicked on square {},{}", row, col);
                 Logger.info("Press ENTER to set the color of the disk");
             } else {
-                Logger.error("This square is not empty!");
-                Logger.info("Please select an empty square.");
+                Logger.info("This square is not empty!");
+                Logger.info("Please select an empty square!");
             }
-        }
     }
 
     private void registerKeyEventHandler() {
         Platform.runLater(() -> board.getScene().setOnKeyPressed(
                 keyEvent -> {
-                    if(squareIsSelected) {
-                        if(keyEvent.getCode() == KeyCode.ENTER) {
-                            squareIsSelected = false;
-                            switchPlayer(player);
-                            setTurn(player);
-                            Logger.debug("Enter was pressed. Next Player's turn.");
-                        }
+                        if (squareIsSelected) {
+                            var row = GridPane.getRowIndex(pressedSquare);
+                            var col = GridPane.getColumnIndex(pressedSquare);
+                            var toBePlacedDisk = (Circle) pressedSquare.getChildren().get(0);
+
+                            if (gameState.areDisksLeft(toBePlacedColor)) {
+                                if (gameState.canPlaceDisk(row, col, toBePlacedColor)) {
+                                    if (keyEvent.getCode() == KeyCode.ENTER) {
+                                        squareIsSelected = false;
+                                        gameState.placeDisk(row, col, getDiskColor(toBePlacedDisk));
+                                        checkStatus();
+                                        setNumLabels();
+                                        switchPlayer(player);
+                                        setTurn(player);
+                                        Logger.debug("Enter was pressed. Next Player's turn.");
+                                }
+
+                            } else {
+                                    Logger.info("Can't place a disk where it's neighbours are the same color!");
+                                    toBePlacedDisk.setFill(Color.TRANSPARENT);
+                                    squareIsSelected = false;
+                                }
+                        } else {
+                                Logger.info("There are no more disks of this color!");
+                            }
                     }
                 }
         ));
@@ -171,6 +223,28 @@ public class GameController {
         }
     }
 
+    private DiskColor getDiskColor(Circle disk){
+        DiskColor diskColor = DiskColor.NONE;
+
+        if(disk.getFill().equals(Color.RED))
+            diskColor = DiskColor.RED;
+        if(disk.getFill().equals(Color.DODGERBLUE))
+            diskColor = DiskColor.BLUE;
+        if(disk.getFill().equals(Color.GREEN))
+            diskColor = DiskColor.GREEN;
+        if(disk.getFill().equals(Color.rgb(238,203,26)))
+            diskColor = DiskColor.YELLOW;
+
+        return diskColor;
+    }
+
+    private void checkStatus() {
+        if (gameState.isGameOver()) {
+            gameOver.setValue(true);
+        } else if (gameState.isGameDraw()) {
+            gameDraw.setValue(true);
+        }
+    }
 
 }
 

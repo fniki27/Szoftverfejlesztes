@@ -1,14 +1,11 @@
 package game;
 
-import org.tinylog.Logger;
-
 import static game.FourColorsGame.BOARD_SIZE;
 
 public class GameCheck {
 
     public boolean drawCheck(int num_of_red, int num_of_blue, int num_of_green, int num_of_yellow) {
-        if (num_of_red == 3 && num_of_blue == 3 && num_of_green == 3 && num_of_yellow == 3) {
-            Logger.info("Game is Draw!");
+        if (num_of_red == 0 && num_of_blue == 0 && num_of_green == 0 && num_of_yellow == 0) {
             return  true;
         } else {
             return false;
@@ -42,14 +39,13 @@ public class GameCheck {
                     sum_counter_diagonal = sum_counter_diagonal + board[i][j];
 
             }
-        if (sum_main_diagonal == 10 || sum_counter_diagonal == 1001)
+        if (sum_main_diagonal == 1001 || sum_counter_diagonal == 1001)
             return true;
         return false;
     }
 
     public boolean winCheck(int[][] board) {
         if (verticalCheck(board) || horizontalCheck(board) || diagonalCheck(board)) {
-            Logger.info("Game Over!");
             return true;
         } else {
             return false;
