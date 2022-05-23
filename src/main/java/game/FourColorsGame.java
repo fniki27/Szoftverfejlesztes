@@ -11,97 +11,71 @@ public class FourColorsGame {
     public static final int YELLOW = 1000;
     public static final int BOARD_SIZE = 4;
 
-    private int red_num = 0;
-    private int blue_num = 0;
-    private int green_num = 0;
-    private int yellow_num = 0;
+    public int red_num = 3;
+    public int blue_num = 3;
+    public int green_num = 3;
+    public int yellow_num = 3;
 
     private boolean gameIsDraw = false;
     private boolean gameIsOver = false;
     private GameCheck checkStatus = new GameCheck();
 
-    public static Player activePlayer = Player.ONE;
     public static Player winner;
 
     public int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
 
-    public void emptyBoard() {
-        for (var i = 0; i < BOARD_SIZE-1; i++)
-            for (var j = 0; j < BOARD_SIZE-1; j++)
-                board[i][j] = 0;
-    }
 
     public void placeDisk(int i, int j, int color) {
         if (!gameIsDraw && !gameIsOver)
-            if (board[i][j] == 0) {
-
-                Player currentPlayer = activePlayer;
-
-                if (currentPlayer == Player.ONE) {
-                    switch (color) {
-                        case RED -> placeRed(i,j);
-                        case BLUE -> placeBlue(i,j);
-                    }
-                }
-
-                if (currentPlayer == Player.TWO) {
-                    switch (color) {
-                        case GREEN -> placeGreen(i,j);
-                        case YELLOW -> placeYellow(i,j);
-                    }
+            if (isSquareEmpty(i,j)) {
+                switch (color) {
+                    case RED -> placeRed(i, j);
+                    case BLUE -> placeBlue(i, j);
+                    case GREEN -> placeGreen(i, j);
+                    case YELLOW -> placeYellow(i, j);
                 }
 
                 if (checkStatus.winCheck(board)) {
-                    winner = currentPlayer;
                     gameIsOver = true;
                 } else if (checkStatus.drawCheck(red_num, blue_num, green_num, yellow_num)) {
                     gameIsDraw = true;
                 }
-
-                changePlayer(activePlayer);
             }
     }
 
-    public void changePlayer(Player last_player) {
-        if(last_player == Player.ONE){
-            activePlayer = Player.TWO;
-        } else {
-            activePlayer = Player.ONE;
-        }
-    }
 
-    private void placeRed(int i, int j) {
-        if (red_num < 4) {
+    public void placeRed(int i, int j) {
+        if (red_num > 0) {
             if(canPlaceDisk(i,j,RED)) {
                 board[i][j] = RED;
-                red_num++;
+                red_num--;
             }
         }
     }
 
-    private void placeBlue(int i, int j) {
-        if (blue_num < 4) {
+    public void placeBlue(int i, int j) {
+        if (blue_num > 0) {
             if(canPlaceDisk(i,j,BLUE)) {
                 board[i][j] = BLUE;
-                blue_num++;
+                blue_num--;
             }
         }
     }
 
-    private void placeGreen(int i, int j) {
-        if (green_num < 4) {
+    public void placeGreen(int i, int j) {
+        if (green_num > 0) {
             if(canPlaceDisk(i,j,GREEN)) {
                 board[i][j] = GREEN;
-                green_num++;
+                green_num--;
             }
         }
     }
 
-    private void placeYellow(int i, int j) {
-        if (yellow_num < 4) {
+    public void placeYellow(int i, int j) {
+        if (yellow_num > 0) {
             if(canPlaceDisk(i,j,YELLOW)) {
                 board[i][j] = YELLOW;
-                yellow_num++;
+                yellow_num--;
             }
         }
     }
@@ -112,6 +86,7 @@ public class FourColorsGame {
         }
         return true;
     }
+
 
     public boolean isGameOver(){
         if (gameIsOver){
@@ -127,6 +102,16 @@ public class FourColorsGame {
         } else {
             return false;
         }
+    }
+
+    public boolean isSquareEmpty(int i, int j) {
+         if(board[i][j] != 0)
+             return false;
+         return true;
+    }
+
+    public void setEmptySquare(int i, int j) {
+        board[i][j] = 0;
     }
 
 }
