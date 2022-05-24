@@ -1,5 +1,6 @@
 package gui;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import game.DiskColor;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -33,6 +34,8 @@ public class GameController {
     private boolean squareIsSelected = false;
 
     private DiskColor toBePlacedColor;
+
+    private StatsController stats = new StatsController();
 
     @FXML
     private Button mainButton;
@@ -94,9 +97,9 @@ public class GameController {
     @FXML
     private void setWinner(Player player){
         if (player == Player.ONE){
-            playerLabel.setText("Winner: " + username);
+            playerLabel.setText("Game Over! Winner: " + username);
         } else if (player == Player.TWO) {
-            playerLabel.setText("Winner: " + username2);
+            playerLabel.setText("Game Over! Winner: " + username2);
         }
 
     }
@@ -117,15 +120,20 @@ public class GameController {
                 board.addEventFilter(MouseEvent.ANY, handler);
                 mainButton.setVisible(true);
                 setWinner(gameState.player);
+                try {
+                    stats.writeWinnersToFile(username,username2,getWinnerName());
+                    Logger.info("Updating statistics...");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 Logger.info("Game Over!");
-
             }
         });
         gameDraw.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 board.addEventFilter(MouseEvent.ANY, handler);
                 mainButton.setVisible(true);
-                setWinner(gameState.player);
+                playerLabel.setText("Game is Draw!");
                 Logger.info("Game is Draw!");
             }
         });
@@ -269,6 +277,16 @@ public class GameController {
         }
     }
 
+    private String getWinnerName() {
+        String winner = "";
+        if (gameState.player == Player.ONE) {
+            winner = username;
+        } else if (gameState.player == Player.TWO) {
+            winner = username2;
+        }
+
+        return winner;
+    }
 }
 
 
