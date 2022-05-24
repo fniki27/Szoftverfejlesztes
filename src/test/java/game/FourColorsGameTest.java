@@ -48,6 +48,13 @@ class FourColorsGameTest {
             {0, 100, 0, 1},
     };
 
+    int[][] board7 = {
+            {0, 1000, 0, 0},
+            {1, 0, 100, 0},
+            {0, 0, 0, 100},
+            {10, 0, 10, 0},
+    };
+
     @Test
     void placeDisk() {
         FourColorsGame a = new FourColorsGame();
@@ -152,6 +159,7 @@ class FourColorsGameTest {
         assertTrue(p.canPlaceDisk(2,2,DiskColor.BLUE));
         assertFalse(p.canPlaceDisk(3,2,DiskColor.GREEN));
         assertTrue(p.canPlaceDisk(0,3,DiskColor.RED));
+        assertTrue(p.canPlaceDisk(0,2,DiskColor.YELLOW));
 
         FourColorsGame v = new FourColorsGame();
         v.board = board6;
@@ -159,6 +167,15 @@ class FourColorsGameTest {
         assertFalse(v.canPlaceDisk(2,1,DiskColor.BLUE));
         assertFalse(v.canPlaceDisk(1,1,DiskColor.RED));
         assertTrue(v.canPlaceDisk(1,3,DiskColor.YELLOW));
+
+        FourColorsGame z = new FourColorsGame();
+        z.board = board7;
+        assertFalse(z.canPlaceDisk(3,3,DiskColor.GREEN));
+        assertTrue(z.canPlaceDisk(3,3,DiskColor.RED));
+        assertFalse(z.canPlaceDisk(3,1,DiskColor.BLUE));
+        assertTrue(z.canPlaceDisk(3,1,DiskColor.YELLOW));
+        assertFalse(z.canPlaceDisk(0,0,DiskColor.RED));
+        assertTrue(z.canPlaceDisk(2,0,DiskColor.GREEN));
     }
 
     @Test
