@@ -86,27 +86,20 @@ public class GameController {
         gameState = new FourColorsGame();
         player = Player.ONE;
         populateGrid();
-        gameState.setEmptySquare();
+        gameState.setEmptySquare(gameState.board);
         registerKeyEventHandler();
         setNumLabels();
 
         gameOver.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                Logger.info("Game Over");
+                Logger.info("Game Over!");
             }
         });
         gameDraw.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                Logger.info("Game resulted in draw, no changes in statistics");
+                Logger.info("Game is Draw!");
             }
         });
-
-        for (int a = 0; a < 4; a++) {
-            for (int b = 0; b < 4; b++) {
-                System.out.println(gameState.board[a][b] + " ");
-            }
-            System.out.println();
-        }
     }
 
     @FXML
@@ -199,7 +192,7 @@ public class GameController {
                                         setNumLabels();
                                         switchPlayer(player);
                                         setTurn(player);
-                                        Logger.debug("Enter was pressed. Next Player's turn.");
+                                        Logger.debug("Enter was pressed.");
                                 }
 
                             } else {

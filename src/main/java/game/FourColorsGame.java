@@ -24,17 +24,31 @@ public class FourColorsGame {
     public int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
 
     public void placeDisk(int i, int j, DiskColor color) {
-        switch (color) {
-                    case RED -> placeRed(i, j);
-                    case BLUE -> placeBlue(i, j);
-                    case GREEN -> placeGreen(i, j);
-                    case YELLOW -> placeYellow(i, j);
-        }
+        if(!gameIsDraw && !gameIsOver) {
+            switch (color) {
+                case RED -> {
+                    if(red_num != 0)
+                        placeRed(i, j);
+                }
+                case BLUE -> {
+                    if(blue_num != 0)
+                        placeBlue(i, j);
+                }
+                case GREEN -> {
+                    if(green_num != 0)
+                        placeGreen(i, j);
+                }
+                case YELLOW -> {
+                    if(yellow_num != 0)
+                        placeYellow(i, j);
+                }
+            }
 
-        if (checkStatus.winCheck(board)) {
-            gameIsOver = true;
-        } else if (checkStatus.drawCheck(red_num, blue_num, green_num, yellow_num)) {
-            gameIsDraw = true;
+            if (checkStatus.winCheck(board)) {
+                gameIsOver = true;
+            } else if (checkStatus.drawCheck(red_num, blue_num, green_num, yellow_num)) {
+                gameIsDraw = true;
+            }
         }
     }
 
@@ -162,7 +176,7 @@ public class FourColorsGame {
          return true;
     }
 
-    public void setEmptySquare() {
+    public void setEmptySquare(int[][] board) {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 board[i][j] = 0;

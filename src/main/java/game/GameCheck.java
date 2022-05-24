@@ -1,6 +1,5 @@
 package game;
 
-import static game.FourColorsGame.BOARD_SIZE;
 
 public class GameCheck {
 
@@ -13,33 +12,41 @@ public class GameCheck {
     }
 
     private boolean verticalCheck(int[][] board) {
-        int i = 0;
-        for (int j=0; j<BOARD_SIZE-1; j++)
-            if (board[i][j] + board[i+1][j] + board[i+2][j] + board[i+3][j] == 1001)
+        for (int i = 0; i < board.length; i++) {
+            int sumCol = 0;
+            for (int j = 0; j < board.length; j++) {
+                sumCol = sumCol + board[j][i];
+            }
+            if (sumCol == 1111)
                 return true;
+        }
         return false;
     }
 
     private boolean horizontalCheck(int[][] board) {
-        int j = 0;
-        for (int i=0; i<BOARD_SIZE-1; i++)
-            if (board[i][j] + board[i][j+1] + board[i][j+2] + board[i][j+3] == 1001)
+        for(int i = 0; i < board.length; i++){
+            int sumRow = 0;
+            for(int j = 0; j < board.length; j++){
+                sumRow = sumRow + board[i][j];
+            }
+            if (sumRow == 1111)
                 return true;
+        }
         return false;
     }
 
     private boolean diagonalCheck(int[][] board) {
         int sum_main_diagonal = 0;
         int sum_counter_diagonal = 0;
-        for (int i = 0; i < BOARD_SIZE-1; i++)
-            for (int j = 0; j< BOARD_SIZE-1; j++) {
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board.length; j++) {
                 if(i == j)
                     sum_main_diagonal = sum_main_diagonal + board[i][j];
-                if(i + j == BOARD_SIZE-1)
+                if(i + j == board.length - 1)
                     sum_counter_diagonal = sum_counter_diagonal + board[i][j];
 
             }
-        if (sum_main_diagonal == 1001 || sum_counter_diagonal == 1001)
+        if (sum_main_diagonal == 1111 || sum_counter_diagonal == 1111)
             return true;
         return false;
     }
