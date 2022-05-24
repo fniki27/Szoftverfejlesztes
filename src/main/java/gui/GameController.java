@@ -20,8 +20,6 @@ public class GameController {
 
     private FourColorsGame gameState;
 
-    private Player player;
-
     private boolean squareIsSelected = false;
 
     private DiskColor toBePlacedColor;
@@ -84,7 +82,6 @@ public class GameController {
     @FXML
     private void initialize() {
         gameState = new FourColorsGame();
-        player = Player.ONE;
         populateGrid();
         gameState.setEmptySquare(gameState.board);
         registerKeyEventHandler();
@@ -141,7 +138,7 @@ public class GameController {
         if (gameState.isSquareEmpty(row,col)) {
                 squareIsSelected = true;
 
-                if (player == Player.ONE) {
+                if (gameState.player == Player.ONE) {
                     if (disk.getFill().equals(Color.TRANSPARENT)) {
                         disk.setFill(Color.RED);
                         toBePlacedColor = DiskColor.RED;
@@ -154,7 +151,7 @@ public class GameController {
                     }
                 }
 
-                if(player == Player.TWO){
+                if(gameState.player == Player.TWO){
                     if(disk.getFill().equals(Color.TRANSPARENT)) {
                         disk.setFill(Color.GREEN);
                         toBePlacedColor = DiskColor.GREEN;
@@ -183,38 +180,36 @@ public class GameController {
                             var col = GridPane.getColumnIndex(pressedSquare);
                             var toBePlacedDisk = (Circle) pressedSquare.getChildren().get(0);
 
-                            if (gameState.areDisksLeft(toBePlacedColor)) {
-                                if (gameState.canPlaceDisk(row, col, toBePlacedColor)) {
-                                    if (keyEvent.getCode() == KeyCode.ENTER) {
-                                        squareIsSelected = false;
-                                        gameState.placeDisk(row, col, getDiskColor(toBePlacedDisk));
-                                        checkStatus();
-                                        setNumLabels();
-                                        switchPlayer(player);
-                                        setTurn(player);
-                                        Logger.debug("Enter was pressed.");
-                                }
+                            if (gameState.canPlaceDisk(row, col, toBePlacedColor)) {
+                                if (gameState.areDisksLeft(toBePlacedColor)) {
+                                    if (gameState.canPlaceDisk(row, col, toBePlacedColor)) {
+                                        if (keyEvent.getCode() == KeyCode.ENTER) {
+                                            squareIsSelected = false;
+                                            gameState.placeDisk(row, col, getDiskColor(toBePlacedDisk));
+                                            checkStatus();
+                                            setNumLabels();
+                                            setTurn(gameState.player);
+                                            Logger.debug("Enter was pressed.");
+                                        }
 
-                            } else {
-                                    Logger.info("Can't place a disk where it's neighbours are the same color!");
-                                    toBePlacedDisk.setFill(Color.TRANSPARENT);
-                                    squareIsSelected = false;
+                                    } else {
+                                        toBePlacedDisk.setFill(Color.TRANSPARENT);
+                                        squareIsSelected = false;
+                                        Logger.info("Can't place a disk where it's neighbours are the same color!");
+                                    }
+                                } else {
+                                    Logger.info("There are no more disks of this color!");
                                 }
-                        } else {
-                                Logger.info("There are no more disks of this color!");
+                            } else {
+                                toBePlacedDisk.setFill(Color.TRANSPARENT);
+                                squareIsSelected = false;
+                                Logger.info("Can't place a disk where it's neighbours are the same color!");
                             }
-                    }
+                        }
                 }
         ));
     }
 
-    private void switchPlayer(Player activePlayer) {
-        if(activePlayer == Player.ONE) {
-            player = Player.TWO;
-        } else if(activePlayer == Player.TWO) {
-            player = Player.ONE;
-        }
-    }
 
     private DiskColor getDiskColor(Circle disk){
         DiskColor diskColor = DiskColor.NONE;

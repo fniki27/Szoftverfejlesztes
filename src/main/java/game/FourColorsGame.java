@@ -21,6 +21,8 @@ public class FourColorsGame {
     private boolean gameIsOver = false;
     private GameCheck checkStatus = new GameCheck();
 
+    public Player player = Player.ONE;
+
     public int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
 
     public void placeDisk(int i, int j, DiskColor color) {
@@ -43,6 +45,8 @@ public class FourColorsGame {
                         placeYellow(i, j);
                 }
             }
+
+            switchPlayer(player);
 
             if (checkStatus.winCheck(board)) {
                 gameIsOver = true;
@@ -124,17 +128,17 @@ public class FourColorsGame {
             }
         }
 
-        else if (j == 0 && (i ==1 || i ==2)) {
+        else if (j == 0 && (i == 1 || i == 2)) {
             if (board[i-1][j] == color || board[i-1][j+1] == color || board[i][j+1] == color || board[i+1][j] == color || board[i+1][j+1] == color)
                     return false;
         }
 
-        else if (j == 3 && (i ==1 || i ==2)) {
+        else if (j == 3 && (i == 1 || i == 2)) {
             if (board[i-1][j] == color || board[i-1][j-1] == color || board[i][j-1] == color || board[i+1][j-1] == color || board[i+1][j] == color)
                     return false;
         }
 
-        else if (board[i - 1][j - 1] == color || board[i - 1][j] == color || board[i - 1][j + 1] == color || board[i][j-1] == color || board[i][j+1] == color) {
+        else if (board[i - 1][j - 1] == color || board[i - 1][j] == color || board[i - 1][j + 1] == color || board[i][j-1] == color || board[i][j+1] == color || board[i+1][j-1] == color || board[i+1][j] == color || board[i+1][j+1] == color){
             return false;
         }
 
@@ -182,5 +186,12 @@ public class FourColorsGame {
                 board[i][j] = 0;
             }
         }
+    }
+
+    public void switchPlayer(Player currentPlayer) {
+        if(currentPlayer == Player.ONE)
+            player = Player.TWO;
+        else if (currentPlayer == Player.TWO)
+            player = Player.ONE;
     }
 }

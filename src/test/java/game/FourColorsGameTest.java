@@ -41,6 +41,13 @@ class FourColorsGameTest {
             {0, 0, 0, 0},
     };
 
+    int[][] board6 = {
+            {1000, 0, 0, 10},
+            {10, 0, 0, 0},
+            {1, 0, 0, 100},
+            {0, 100, 0, 1},
+    };
+
     @Test
     void placeDisk() {
         FourColorsGame a = new FourColorsGame();
@@ -145,6 +152,13 @@ class FourColorsGameTest {
         assertTrue(p.canPlaceDisk(2,2,DiskColor.BLUE));
         assertFalse(p.canPlaceDisk(3,2,DiskColor.GREEN));
         assertTrue(p.canPlaceDisk(0,3,DiskColor.RED));
+
+        FourColorsGame v = new FourColorsGame();
+        v.board = board6;
+        assertFalse(v.canPlaceDisk(3,0,DiskColor.GREEN));
+        assertFalse(v.canPlaceDisk(2,1,DiskColor.BLUE));
+        assertFalse(v.canPlaceDisk(1,1,DiskColor.RED));
+        assertTrue(v.canPlaceDisk(1,3,DiskColor.YELLOW));
     }
 
     @Test
@@ -184,6 +198,16 @@ class FourColorsGameTest {
     void isGameDraw() {
         FourColorsGame e = new FourColorsGame();
         assertFalse(e.isGameOver());
+    }
+
+    @Test
+    void switchPlayer() {
+        FourColorsGame t = new FourColorsGame();
+        assertEquals(Player.ONE, t.player);
+        t.switchPlayer(t.player);
+        assertEquals(Player.TWO, t.player);
+        t.switchPlayer(t.player);
+        assertEquals(Player.ONE, t.player);
     }
 
 }
