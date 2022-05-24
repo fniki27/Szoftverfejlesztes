@@ -85,26 +85,6 @@ public class GameController {
     }
 
     @FXML
-    private void setTurn(Player player){
-        if (player == Player.ONE){
-            playerLabel.setText("Turn: " + username);
-        } else if (player == Player.TWO) {
-            playerLabel.setText("Turn: " + username2);
-        }
-
-    }
-
-    @FXML
-    private void setWinner(Player player){
-        if (player == Player.ONE){
-            playerLabel.setText("Game Over! Winner: " + username);
-        } else if (player == Player.TWO) {
-            playerLabel.setText("Game Over! Winner: " + username2);
-        }
-
-    }
-
-    @FXML
     private void initialize() {
         gameState = new FourColorsGame();
         mainButton.setVisible(false);
@@ -137,31 +117,6 @@ public class GameController {
                 Logger.info("Game is Draw!");
             }
         });
-    }
-
-    @FXML
-    private void setNumLabels() {
-        redNumLabel.setText(Integer.toString(gameState.red_num));
-        blueNumLabel.setText(Integer.toString(gameState.blue_num));
-        greenNumLabel.setText(Integer.toString(gameState.green_num));
-        yellowNumLabel.setText(Integer.toString(gameState.yellow_num));
-    }
-
-    @FXML
-    public void switchToMenu(ActionEvent event) throws IOException {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Parent root = FXMLLoader.load(getClass().getResource("/menu.fxml"));
-        stage.setScene(new Scene(root));
-        stage.show();
-    }
-
-    private void populateGrid() {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                var square = createSquare();
-                board.add(square, j, i);
-            }
-        }
     }
 
     private StackPane createSquare() {
@@ -253,6 +208,42 @@ public class GameController {
         ));
     }
 
+    @FXML
+    private void setNumLabels() {
+        redNumLabel.setText(Integer.toString(gameState.red_num));
+        blueNumLabel.setText(Integer.toString(gameState.blue_num));
+        greenNumLabel.setText(Integer.toString(gameState.green_num));
+        yellowNumLabel.setText(Integer.toString(gameState.yellow_num));
+    }
+
+    @FXML
+    private void setTurn(Player player){
+        if (player == Player.ONE){
+            playerLabel.setText("Turn: " + username);
+        } else if (player == Player.TWO) {
+            playerLabel.setText("Turn: " + username2);
+        }
+
+    }
+
+    @FXML
+    private void setWinner(Player player){
+        if (player == Player.ONE){
+            playerLabel.setText("Game Over! Winner: " + username);
+        } else if (player == Player.TWO) {
+            playerLabel.setText("Game Over! Winner: " + username2);
+        }
+
+    }
+
+
+    @FXML
+    public void switchToMenu(ActionEvent event) throws IOException {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Parent root = FXMLLoader.load(getClass().getResource("/menu.fxml"));
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
 
     private DiskColor getDiskColor(Circle disk){
         DiskColor diskColor = DiskColor.NONE;
@@ -286,6 +277,15 @@ public class GameController {
         }
 
         return winner;
+    }
+
+    private void populateGrid() {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                var square = createSquare();
+                board.add(square, j, i);
+            }
+        }
     }
 }
 

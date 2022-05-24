@@ -1,13 +1,12 @@
-package statistics.repository;
+package statistics;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import statistics.Winners;
-import statistics.repository.GsonRepository;
+import statistics.GsonRepository;
 
 public class WinnerRepository extends GsonRepository<Winners> {
 

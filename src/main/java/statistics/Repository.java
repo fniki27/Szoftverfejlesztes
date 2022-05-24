@@ -1,4 +1,4 @@
-package statistics.repository;
+package statistics;
 
 import java.util.ArrayList;
 import java.util.Collections;

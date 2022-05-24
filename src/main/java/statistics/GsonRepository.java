@@ -1,11 +1,9 @@
-package statistics.repository;
+package statistics;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.google.gson.Gson;

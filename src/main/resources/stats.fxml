@@ -9,6 +9,14 @@
 
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="500.0" style="-fx-background-color: #fddbd3;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.StatsController">
    <children>
+      <Button mnemonicParsing="false" onAction="#switchToMenu" text="Back">
+         <VBox.margin>
+            <Insets top="30.0" />
+         </VBox.margin>
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Button>
       <Label text="Top Winners">
          <font>
             <Font size="40.0" />
@@ -22,13 +30,5 @@
             <Font size="24.0" />
          </font>
       </Text>
-      <Button mnemonicParsing="false" onAction="#switchToMenu" text="Back">
-         <VBox.margin>
-            <Insets top="350.0" />
-         </VBox.margin>
-         <font>
-            <Font size="22.0" />
-         </font>
-      </Button>
    </children>
 </VBox>

@@ -11,7 +11,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.tinylog.Logger;
 import statistics.TopWinners;
-import statistics.repository.WinnerRepository;
+import statistics.WinnerRepository;
 import statistics.Winners;
 
 import java.io.File;
