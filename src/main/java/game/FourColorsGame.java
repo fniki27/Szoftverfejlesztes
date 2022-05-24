@@ -46,13 +46,12 @@ public class FourColorsGame {
                 }
             }
 
-            switchPlayer(player);
-
             if (checkStatus.winCheck(board)) {
                 gameIsOver = true;
             } else if (checkStatus.drawCheck(red_num, blue_num, green_num, yellow_num)) {
                 gameIsDraw = true;
-            }
+            } else switchPlayer(player);
+
         }
     }
 

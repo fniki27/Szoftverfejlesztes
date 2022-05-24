@@ -4,7 +4,14 @@ import game.DiskColor;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
@@ -13,7 +20,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import game.FourColorsGame;
 import game.Player;
+import javafx.stage.Stage;
 import org.tinylog.Logger;
+
+import java.io.IOException;
 
 
 public class GameController {
@@ -23,6 +33,9 @@ public class GameController {
     private boolean squareIsSelected = false;
 
     private DiskColor toBePlacedColor;
+
+    @FXML
+    private Button mainButton;
 
     @FXML
     private Label redNumLabel;
@@ -36,9 +49,8 @@ public class GameController {
     @FXML
     private Label yellowNumLabel;
 
-
     @FXML
-    private Label currentPlayerLabel;
+    private Label playerLabel;
 
     @FXML
     private Label firstPlayer;
@@ -64,7 +76,7 @@ public class GameController {
     public void setUsername(String username, String username2){
         this.username = username;
         this.username2 = username2;
-        currentPlayerLabel.setText(this.username);
+        playerLabel.setText("Turn: " + this.username);
         firstPlayer.setText(this.username + "'s disks: ");
         secondPlayer.setText(this.username2 + "'s disks: ");
     }
@@ -72,9 +84,19 @@ public class GameController {
     @FXML
     private void setTurn(Player player){
         if (player == Player.ONE){
-            currentPlayerLabel.setText(username);
+            playerLabel.setText("Turn: " + username);
         } else if (player == Player.TWO) {
-            currentPlayerLabel.setText(username2);
+            playerLabel.setText("Turn: " + username2);
+        }
+
+    }
+
+    @FXML
+    private void setWinner(Player player){
+        if (player == Player.ONE){
+            playerLabel.setText("Winner: " + username);
+        } else if (player == Player.TWO) {
+            playerLabel.setText("Winner: " + username2);
         }
 
     }
@@ -82,18 +104,28 @@ public class GameController {
     @FXML
     private void initialize() {
         gameState = new FourColorsGame();
+        mainButton.setVisible(false);
         populateGrid();
         gameState.setEmptySquare(gameState.board);
         registerKeyEventHandler();
         setNumLabels();
 
+        EventHandler<MouseEvent> handler = MouseEvent::consume;
+
         gameOver.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
+                board.addEventFilter(MouseEvent.ANY, handler);
+                mainButton.setVisible(true);
+                setWinner(gameState.player);
                 Logger.info("Game Over!");
+
             }
         });
         gameDraw.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
+                board.addEventFilter(MouseEvent.ANY, handler);
+                mainButton.setVisible(true);
+                setWinner(gameState.player);
                 Logger.info("Game is Draw!");
             }
         });
@@ -105,6 +137,14 @@ public class GameController {
         blueNumLabel.setText(Integer.toString(gameState.blue_num));
         greenNumLabel.setText(Integer.toString(gameState.green_num));
         yellowNumLabel.setText(Integer.toString(gameState.yellow_num));
+    }
+
+    @FXML
+    public void switchToMenu(ActionEvent event) throws IOException {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Parent root = FXMLLoader.load(getClass().getResource("/menu.fxml"));
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
     private void populateGrid() {
@@ -180,30 +220,25 @@ public class GameController {
                             var col = GridPane.getColumnIndex(pressedSquare);
                             var toBePlacedDisk = (Circle) pressedSquare.getChildren().get(0);
 
-                            if (gameState.canPlaceDisk(row, col, toBePlacedColor)) {
-                                if (gameState.areDisksLeft(toBePlacedColor)) {
-                                    if (gameState.canPlaceDisk(row, col, toBePlacedColor)) {
-                                        if (keyEvent.getCode() == KeyCode.ENTER) {
-                                            squareIsSelected = false;
-                                            gameState.placeDisk(row, col, getDiskColor(toBePlacedDisk));
-                                            checkStatus();
-                                            setNumLabels();
-                                            setTurn(gameState.player);
-                                            Logger.debug("Enter was pressed.");
-                                        }
-
-                                    } else {
-                                        toBePlacedDisk.setFill(Color.TRANSPARENT);
+                            if (gameState.areDisksLeft(toBePlacedColor)) {
+                                if (gameState.canPlaceDisk(row, col, toBePlacedColor)) {
+                                    if (keyEvent.getCode() == KeyCode.ENTER) {
+                                        Logger.debug("Enter was pressed.");
                                         squareIsSelected = false;
-                                        Logger.info("Can't place a disk where it's neighbours are the same color!");
-                                    }
+                                        gameState.placeDisk(row, col, getDiskColor(toBePlacedDisk));
+                                        setNumLabels();
+                                        setTurn(gameState.player);
+                                        checkStatus();
+                                        }
                                 } else {
-                                    Logger.info("There are no more disks of this color!");
+                                    toBePlacedDisk.setFill(Color.TRANSPARENT);
+                                    squareIsSelected = false;
+                                    Logger.info("Can't place a disk where it's neighbours are the same color!");
                                 }
                             } else {
                                 toBePlacedDisk.setFill(Color.TRANSPARENT);
                                 squareIsSelected = false;
-                                Logger.info("Can't place a disk where it's neighbours are the same color!");
+                                Logger.info("There are no more disks of this color!");
                             }
                         }
                 }
